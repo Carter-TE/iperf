@@ -1145,8 +1145,11 @@ iperf_parse_arguments(struct iperf_test *test, int argc, char **argv)
         {"idle-timeout", required_argument, NULL, OPT_IDLE_TIMEOUT},
         {"rcv-timeout", required_argument, NULL, OPT_RCV_TIMEOUT},
         {"snd-timeout", required_argument, NULL, OPT_SND_TIMEOUT},
-#if defined(HAVE_UDP_SEGMENT) || defined(HAVE_UDP_GRO)
-        {"gsro", no_argument, NULL, OPT_GSRO},
+#if defined(HAVE_UDP_SEGMENT)
+        {"udp-gso", no_argument, NULL, OPT_UDP_GSO},
+#endif
+#if defined(HAVE_UDP_GRO)
+        {"udp-gro", no_argument, NULL, OPT_UDP_GRO},
 #endif
         {"debug", optional_argument, NULL, 'd'},
         {"help", no_argument, NULL, 'h'},
@@ -1646,14 +1649,14 @@ iperf_parse_arguments(struct iperf_test *test, int argc, char **argv)
 		test->settings->connect_timeout = unit_atoi(optarg);
 		client_flag = 1;
 		break;
-#if defined(HAVE_UDP_SEGMENT) || defined(HAVE_UDP_GRO)
-            case OPT_GSRO:
 #ifdef HAVE_UDP_SEGMENT
+            case OPT_UDP_GSO:
 		test->settings->gso = 1;
+                break;
 #endif
 #ifdef HAVE_UDP_GRO
+            case OPT_UDP_GRO:
 		test->settings->gro = 1;
-#endif
 		break;
 #endif
 	    case 'h':
@@ -2995,12 +2998,12 @@ iperf_defaults(struct iperf_test *testp)
     testp->settings->pacing_timer = DEFAULT_PACING_TIMER;
     testp->settings->burst = 0;
 #ifdef HAVE_UDP_SEGMENT
-    testp->settings->gso = GSO_DEF;
+    testp->settings->gso = 0;
     testp->settings->gso_dg_size = 0;
     testp->settings->gso_bf_size = GSO_BF_MAX_SIZE;
 #endif
 #ifdef HAVE_UDP_GRO
-    testp->settings->gro = GRO_DEF;
+    testp->settings->gro = 0;
     testp->settings->gro_bf_size = GRO_BF_MAX_SIZE;
 #endif
     testp->settings->mss = 0;

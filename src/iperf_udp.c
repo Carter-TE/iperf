@@ -24,6 +24,8 @@
  * This code is distributed under a BSD style license, see the LICENSE
  * file for complete information.
  */
+#include "iperf_config.h"
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -38,7 +40,9 @@
 #include <inttypes.h>
 #include <sys/time.h>
 #include <sys/select.h>
+#if defined(HAVE_UDP_SEGMENT) || defined(HAVE_UDP_GRO)
 #include <linux/udp.h>
+#endif
 
 #include "iperf.h"
 #include "iperf_api.h"
