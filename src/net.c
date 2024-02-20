@@ -38,7 +38,9 @@
 #include <string.h>
 #include <fcntl.h>
 #include <limits.h>
+#if defined(HAVE_UDP_SEGMENT) || defined(HAVE_UDP_GRO)
 #include <linux/udp.h>
+#endif
 
 #ifdef HAVE_SENDFILE
 #ifdef linux
@@ -558,7 +560,7 @@ static void udp_msg_gso(struct cmsghdr *cm, uint16_t gso_size)
 	*valp = gso_size;
 }
 
-static int udp_sendmsg_gso(int fd, const char *data, size_t count, uint16_t gso_size)
+static int udp_sendmsg_gso(int fd, const char *buf, size_t count, uint16_t gso_size)
 {
 	char control[CMSG_SPACE(sizeof(gso_size))] = {0};
 	struct msghdr msg = {0};
@@ -567,7 +569,7 @@ static int udp_sendmsg_gso(int fd, const char *data, size_t count, uint16_t gso_
 	struct cmsghdr *cmsg;
 	int ret;
 
-	iov.iov_base = data;
+	iov.iov_base = (void *) buf;
 	iov.iov_len = count;
 
 	msg.msg_iov = &iov;
